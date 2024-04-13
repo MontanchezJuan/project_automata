@@ -1,18 +1,28 @@
-from automata.fa.dfa import DFA
+from automataModel import Automata       
+from flask import Flask, request, jsonify  
+from flask_cors import CORS
 
-from visual_automata.fa.dfa import VisualDFA
 
-# new_dfa = VisualDFA(
-#     states={'q0', 'q1', 'q2'},
-#     input_symbols={'0', '1'},
-#     transitions={
-#         'q0': {'0': 'q0', '1': 'q1'},
-#         'q1': {'0': 'q0', '1': 'q2'},
-#         'q2': {'0': 'q2', '1': 'q1'}
-#     },
-#     initial_state='q0',
-#     final_states={'q1'}
-# )
+class Main:
+    def __init__(self):
+        self.app = Flask(__name__)
+        CORS(self.app)
 
-# new_dfa.show_diagram(view=True)
-DFA.show_diagram("aa*(a|(b|ab)*)+c")
+        @self.app.route('/crear-automata', methods=['POST'])
+        def crear_autamata():
+            try:
+                data = request.get_json()
+                regex = data.get('regex')
+                # Aquí puedes agregar tu lógica para procesar el String recibido
+                automata = Automata(regex)
+                data_response = automata.estructurar_api()
+                return jsonify({'message': 'Automata creado correctamente', 'data': data_response})
+            except Exception as e:
+                return jsonify({'error': str(e)}), 400
+
+    def run(self):
+        self.app.run(debug=True)
+
+if __name__ == "__main__":
+    main_instance = Main()
+    main_instance.run()
