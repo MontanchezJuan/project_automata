@@ -5,8 +5,14 @@ import { Button, Heading, Input } from "@chakra-ui/react";
 import Swal from "sweetalert2";
 
 import { useAutomata } from "../context/AutomataContext";
+import axios from "axios";
+import { Automata } from "../interfaces/Automata";
 
 const OPERANDOS: string[] = ["(", ")", "|", "+", "*", "?"];
+
+interface Response {
+  data: { automata: Automata; message: string };
+}
 
 export const Landing = () => {
   const [regex, setRegex] = useState<string>("");
@@ -14,7 +20,7 @@ export const Landing = () => {
 
   const navigate = useNavigate();
 
-  const { updateAutomata } = useAutomata();
+  const { addAutomata } = useAutomata();
 
   const handleClick = (e: React.MouseEvent<HTMLInputElement>) => {
     const target = e.target as HTMLInputElement;
@@ -40,6 +46,7 @@ export const Landing = () => {
     }
   };
 
+  // Aquí
   const handleRegex = (value: string) => {
     if (position === null) return;
     const newValue =
@@ -92,44 +99,35 @@ export const Landing = () => {
         }
       }
 
-      if (value === regexSplited[i - 1]) {
-        Swal.fire({
-          title: `Operador repetido ${value}`,
-          text: `Te recomendamos cambiar alguno de los operadores repetidos ${
-            regexSplited[i - 1] + regexSplited[i]
-          }`,
-          icon: "question",
-        });
-        return true;
-      }
-
       return false;
     });
 
     if (notValid) return;
 
-    Swal.fire({
-      title: `OK`,
-      icon: "success",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        updateAutomata({
-          estados: ["q0", "q1", "q2", "q3", "q4", "q5"],
-          alfabeto: ["a", "b", "c"],
-          transiciones: [
-            { q0: { a: "q1", "b,c": "q3" } },
-            { q1: { c: "q2", a: "q4", b: "q3" } },
-            { q2: { "a,b,c": "q2" } },
-            { q3: { a: "q4", "b,c": "q3" } },
-            { q4: { a: "q4", b: "q5", c: "q3" } },
-            { q5: { a: "q4", "b,c": "q3" } },
-          ],
-          estado_inicial: "q0",
-          estados_finales: ["q2", "q4"],
+    axios
+      .post<{ regex: string }, Response>(
+        "http://127.0.0.1:5000/crear-automata",
+        { regex }
+      )
+      .then((response) => {
+        Swal.fire({
+          title: `OK`,
+          text: response.data.message,
+          icon: "success",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            addAutomata(response.data.automata);
+            navigate("/automata");
+          }
         });
-        navigate("/automata");
-      }
-    });
+      })
+      .catch((error) => {
+        Swal.fire({
+          title: `Error`,
+          text: error,
+          icon: "error",
+        });
+      });
   };
 
   return (
