@@ -16,7 +16,7 @@ class Main:
                 # Aquí puedes agregar tu lógica para procesar el String recibido
                 automata = Automata(regex)
                 data_response = automata.estructurar_api()
-                return jsonify({"regex":automata.regex,'message': 'Automata creado correctamente', 'automata': data_response})
+                return jsonify({'message': 'Automata creado correctamente', 'automata': data_response})
             except Exception as e:
                 return jsonify({'error': str(e)}), 400
 

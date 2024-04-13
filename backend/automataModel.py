@@ -45,7 +45,8 @@ class Automata:
             quitar.sort(reverse=True)
             for i in quitar:
                 copia_transiciones.pop(i)
-        return  {  "estados":self.estados,
+        return  {  "regex":self.regex,
+                   "estados":self.estados,
                    "alfabeto":self.alfabeto,
                    "transiciones":transiciones,
                    "estado_inicial":self.estado_inicial,
