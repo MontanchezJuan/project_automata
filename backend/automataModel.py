@@ -29,9 +29,6 @@ class Automata:
         copia_transiciones = self.transiciones.copy()
         transiciones = []
         while len(copia_transiciones) !=0:
-            print(copia_transiciones[0].actual)
-            print(copia_transiciones[0].operacion)
-            print(copia_transiciones[0].destino)
             quitar = [0]
             for i in range(1,len(copia_transiciones)):
                 if copia_transiciones[0].actual == copia_transiciones[i].actual:
@@ -39,7 +36,6 @@ class Automata:
             operaciones = []
             for i in quitar:
                 operaciones.append({copia_transiciones[i].operacion:copia_transiciones[i].destino})
-            print(operaciones)
             transicion = {copia_transiciones[0].actual:operaciones}
             transiciones.append(transicion)
             quitar.sort(reverse=True)
