@@ -25,6 +25,32 @@ class Automata:
         for char in self.regex:
             self.regex_list.append(char)
             
+    def estructurar_api(self):
+        copia_transiciones = self.transiciones.copy()
+        transiciones = []
+        while len(copia_transiciones) !=0:
+            print(copia_transiciones[0].actual)
+            print(copia_transiciones[0].operacion)
+            print(copia_transiciones[0].destino)
+            quitar = [0]
+            for i in range(1,len(copia_transiciones)):
+                if copia_transiciones[0].actual == copia_transiciones[i].actual:
+                    quitar.append(i)
+            operaciones = []
+            for i in quitar:
+                operaciones.append({copia_transiciones[i].operacion:copia_transiciones[i].destino})
+            print(operaciones)
+            transicion = {copia_transiciones[0].actual:operaciones}
+            transiciones.append(transicion)
+            quitar.sort(reverse=True)
+            for i in quitar:
+                copia_transiciones.pop(i)
+        return  {  "estados":self.estados,
+                   "alfabeto":self.alfabeto,
+                   "transiciones":transiciones,
+                   "estado_inicial":self.estado_inicial,
+                   "estado_final":self.estado_final}
+            
     def estructurar_regex(self, regex:list[str]):
         temp_regex = regex 
         regex_estructurada: list[any] = []
@@ -69,15 +95,11 @@ class Automata:
         return transiciones_str
     
     def leer_regex(self, regex_estructurad: list[any], idx):
-        # por que repite S6 a S7?
-        # esto pasa con la primera 'a' del parentesis
         regex_estructurada = regex_estructurad
-        print(regex_estructurada)
         self.idx_estados = idx
         automata = None
         i=0
         while i < len ( regex_estructurada):
-        # for i in range(len(regex_estructurada)):
             if isinstance(regex_estructurada[i],str) and regex_estructurada[i] in self.alfabeto:
                 automata,aumento = self.crear_automata_a(regex_estructurada,i, automata)
                 i=aumento
@@ -155,7 +177,7 @@ class AutomataTipoAB:
         self.estado_final = self.b.estado_final
         self.transiciones:list[Transicion] = self.a.transiciones
         self.transiciones.extend(self.b.transiciones)
-        self.transiciones.append(Transicion(a.estado_final,b.estado_inicial,"lambda"))
+        self.transiciones.append(Transicion(a.estado_final,b.estado_inicial,"λ"))
         
 class AutomataAOB:
     def __init__(self,idx:int, a , b) -> None:
@@ -171,10 +193,10 @@ class AutomataAOB:
         self.estado_final:str = self.estados[len(self.estados)-1]
         self.transiciones: list[Transicion] = self.a.transiciones
         self.transiciones.extend(self.b.transiciones)
-        self.transiciones.append(Transicion(self.estado_inicial,a.estado_inicial,"lambda"))
-        self.transiciones.append(Transicion(self.estado_inicial,b.estado_inicial,"lambda"))
-        self.transiciones.append(Transicion(a.estado_final,self.estado_final,"lambda"))
-        self.transiciones.append(Transicion(b.estado_final,self.estado_final,"lambda"))      
+        self.transiciones.append(Transicion(self.estado_inicial,a.estado_inicial,"λ"))
+        self.transiciones.append(Transicion(self.estado_inicial,b.estado_inicial,"λ"))
+        self.transiciones.append(Transicion(a.estado_final,self.estado_final,"λ"))
+        self.transiciones.append(Transicion(b.estado_final,self.estado_final,"λ"))      
 
 class AutomataMultiplicado:
     def __init__(self, idx:int , a , multiplicador :str) -> None:
@@ -190,56 +212,20 @@ class AutomataMultiplicado:
     def multiplicar(self):
         if self.multiplicador == "*":
             self.a.estados.extend([f"S{self.idx_estados}",f"S{self.idx_estados+1}"])
-            self.a.transiciones.append(Transicion(self.a.estados[len(self.a.estados)-2],self.a.estado_inicial,"lambda"))
-            self.a.transiciones.append(Transicion(self.a.estados[len(self.a.estados)-2],self.a.estados[len(self.a.estados)-1],"lambda"))
-            self.a.transiciones.append(Transicion(self.a.estado_final,self.a.estados[len(self.a.estados)-1],"lambda"))
-            self.a.transiciones.append(Transicion(self.a.estado_final,self.a.estado_inicial,"lambda"))
+            self.a.transiciones.append(Transicion(self.a.estados[len(self.a.estados)-2],self.a.estado_inicial,"λ"))
+            self.a.transiciones.append(Transicion(self.a.estados[len(self.a.estados)-2],self.a.estados[len(self.a.estados)-1],"λ"))
+            self.a.transiciones.append(Transicion(self.a.estado_final,self.a.estados[len(self.a.estados)-1],"λ"))
+            self.a.transiciones.append(Transicion(self.a.estado_final,self.a.estado_inicial,"λ"))
             self.a.estado_inicial = self.a.estados[len(self.a.estados)-2]
             self.a.estado_final = self.a.estados[len(self.a.estados)-1]
             self.idx_estados+=2
         if self.multiplicador == "?":
-            self.a.transiciones.append(Transicion(self.a.estado_inicial,self.a.estado_final,"lambda"))
+            self.a.transiciones.append(Transicion(self.a.estado_inicial,self.a.estado_final,"λ"))
         if self.multiplicador == "+":
             self.a.estados.extend([f"S{self.idx_estados}",f"S{self.idx_estados+1}"])
-            self.a.transiciones.append(Transicion(self.a.estados[len(self.a.estados)-2],self.a.estado_inicial,"lambda"))
-            self.a.transiciones.append(Transicion(self.a.estado_final,self.a.estados[len(self.a.estados)-1],"lambda"))
-            self.a.transiciones.append(Transicion(self.a.estado_final,self.a.estado_inicial,"lambda"))
+            self.a.transiciones.append(Transicion(self.a.estados[len(self.a.estados)-2],self.a.estado_inicial,"λ"))
+            self.a.transiciones.append(Transicion(self.a.estado_final,self.a.estados[len(self.a.estados)-1],"λ"))
+            self.a.transiciones.append(Transicion(self.a.estado_final,self.a.estado_inicial,"λ"))
             self.a.estado_inicial = self.a.estados[len(self.a.estados)-2]
             self.a.estado_final = self.a.estados[len(self.a.estados)-1]
             self.idx_estados+=2
-             
-             
-             
-             
-                
-
-
-# automata = Automata("aa*(a|(b|ab)*)+c")
-# print("alfabeto: ",automata.alfabeto)
-# print(automata.regex_estructurada)
-# automata = Automata("(a)(a|b)(b)*")
-# print("alfabet: ",automata.alfabeto)
-# print(automata.regex_estructurada)
-automata = Automata("(a|b)*b(a|ab)*")
-print("alfabet: ",automata.alfabeto)
-# print(automata.regex_estructurada)
-# automata = Automata("ab(b)*|(a|b)*b(b)*")
-# print("alfabet: ",automata.alfabeto)
-# print(automata.regex_estructurada)
-print("estados: ",automata.estados)
-print("estado_inicial: ",automata.estado_inicial)
-print("estado_final: ",automata.estado_final)
-print("transiciones: ",automata.transiciones_str())
-
-
-# estados=["q0", "q1", "q2", "q3", "q4"],
-# alfabeto=["0", "1"],
-# transiciones=[
-#     {"q0": {"0": "q3", "1": "q1"}},
-#         {"q1": {"0": "q3", "1": "q2"}},
-#         {"q2": {"0": "q3", "1": "q2"}},
-#         {"q3": {"0": "q4", "1": "q1"}},
-#         {"q4": {"0": "q4", "1": "q1"}},
-# ],
-# estado_inicial="q0",
-# estados_finales=["q2", "q4"],
