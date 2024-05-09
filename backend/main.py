@@ -1,9 +1,8 @@
-from backend.automata_regex import AutomataRegex     
-from backend.automata_operaciones import AutomataOperaciones     
-from backend.operaciones import Operaciones as ops
-from flask import Flask, request, jsonify  
+from automata_regex import AutomataRegex
+from automata_operaciones import AutomataOperaciones
+from operaciones import Operaciones as ops
+from flask import Flask, request, jsonify
 from flask_cors import CORS
-
 
 class Main:
     def __init__(self):
@@ -29,8 +28,8 @@ class Main:
                 automata1 = AutomataOperaciones(data.get("automata1"))
                 automata2 = AutomataOperaciones(data.get("automata2"))
                 interseccion = ops.interseccion(automata1,automata2)
-                reverso = ops.reverso(interseccion)
-                return jsonify({"interseccion" : interseccion , "reverso" : reverso}),200
+                # reverso = ops.reverso(interseccion)
+                return jsonify({"interseccion" : interseccion , "reverso" : "reverso"}),200
             except Exception as e:
                 return jsonify({'error': str(e)}), 400
                 

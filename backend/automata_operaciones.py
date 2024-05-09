@@ -1,12 +1,12 @@
-from backend.automata_regex import Transicion
+from automata_regex import Transicion
 
 class AutomataOperaciones:
     def __init__(self,quintupla:dict) -> None:
-        self.estados = quintupla.get("estados")
-        self.alfabeto = quintupla.get("alfabeto")
-        self.transiciones = self.estructurar_transiciones(quintupla.get("transiciones"))
-        self.estado_inicial = quintupla.get("estado_inicial")
-        self.estados_finales = quintupla.get("estados_finales")    
+        self.estados : list[str] = quintupla.get("estados")
+        self.alfabeto: list[str] = quintupla.get("alfabeto")
+        self.transiciones: list[Transicion] = self.estructurar_transiciones(quintupla.get("transiciones"))
+        self.estado_inicial: str = quintupla.get("estado_inicial")
+        self.estados_finales: list[str] = quintupla.get("estados_finales")
     
     def estructurar_transiciones(self, transiciones:dict) -> list[Transicion]:
         instancias_transicion = []
