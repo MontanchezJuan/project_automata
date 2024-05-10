@@ -1,4 +1,4 @@
-class Automata:
+class AutomataRegex:
     def __init__(self, regex) -> None:
         self.estados: list[str] = []
         self.idx_estados:int = 0
