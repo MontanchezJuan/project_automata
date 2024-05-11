@@ -27,14 +27,13 @@ class Main:
                 data = request.get_json()
                 automata1 = AutomataOperaciones(data.get("automata1"))
                 automata2 = AutomataOperaciones(data.get("automata2"))
-                interseccion = ops.interseccion(automata1,automata2)
-                # reverso = ops.reverso(interseccion)
-                return jsonify({"interseccion" : interseccion , "reverso" : "reverso"}),200
+                interseccion_json = ops.interseccion(automata1,automata2)
+                interseccion_automata = AutomataOperaciones(interseccion_json)
+                reverso = ops.reverso(interseccion_automata)
+                return jsonify({"interseccion" : interseccion_json , "reverso" : reverso}),200
             except Exception as e:
                 return jsonify({'error': str(e)}), 400
                 
-        
-
     def run(self):
         self.app.run(debug=True)
 

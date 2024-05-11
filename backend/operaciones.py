@@ -10,9 +10,9 @@ class Operaciones:
         alfabeto: list[str] = automata1.alfabeto
         estados, estado_inicial, estados_finales = Operaciones.crear_estados(automata1,automata2)
         transiciones = Operaciones.crear_transiciones(automata1,automata2, estados)
-        automata_interseccion = AutomataOperaciones({"alfabeto": alfabeto, "estados": estados, "estado_inicial":estado_inicial, "estados_finales": estados_finales, "transiciones":Operaciones.transiciones_to_json(transiciones)})
+        automata_interseccion = AutomataOperaciones({"alfabeto": alfabeto, "estados": estados, "estado_inicial":estado_inicial, "estados_finales": estados_finales, "transiciones":AutomataOperaciones.transiciones_to_json(transiciones)})
         Operaciones.quitar_inalcanzables(automata_interseccion)
-        return {"alfabeto":automata_interseccion.alfabeto, "estados":automata_interseccion.estados, "estado_inicial":automata_interseccion.estado_inicial, "estados_finales":automata_interseccion.estados_finales, "transiciones":Operaciones.transiciones_to_json(automata_interseccion.transiciones)}
+        return automata_interseccion.to_json()
       
     @staticmethod
     def crear_estados(automata1: AutomataOperaciones,automata2: AutomataOperaciones):
@@ -67,22 +67,35 @@ class Operaciones:
     def eliminar_de_lista(lista:list, lista_a_eliminar:list):
         for item in lista_a_eliminar:
             lista.remove(item)        
+
+    @staticmethod
+    def reverso(automata: AutomataOperaciones):
+        transiciones_reverso = Operaciones.crear_transiciones_reverso(automata)
+        alfabeto = automata.alfabeto.copy()
+        estados : list[str] = automata.estados.copy()
+        estados_finales: list[str] = [automata.estado_inicial]
+        estado_inicial : str
+        if len(automata.estados_finales) >1:
+            estado_inicial = Operaciones.crear_estado_inicial_reverso(estados,transiciones_reverso,automata)
+        else:
+            estado_inicial = automata.estados_finales[0]
+        automata_reverso = AutomataOperaciones({"alfabeto": alfabeto, "estados": estados, "estado_inicial":estado_inicial, "estados_finales": estados_finales, "transiciones":AutomataOperaciones.transiciones_to_json(transiciones_reverso)})
+        Operaciones.quitar_inalcanzables(automata_reverso)
+        return automata_reverso.to_json()           
+        
+    @staticmethod
+    def crear_transiciones_reverso(automata: AutomataOperaciones):
+        transiciones_reverso: list[Transicion] = []
+        for transicion in automata.transiciones:
+            transicion_nueva = Transicion(transicion.destino,transicion.actual,transicion.operacion)
+            transiciones_reverso.append(transicion_nueva)
+        return transiciones_reverso
     
     @staticmethod
-    def transiciones_to_json(transiciones:list[Transicion]):
-        copia_transiciones = transiciones.copy()
-        transiciones = []
-        while len(copia_transiciones) !=0:
-            quitar = [0]
-            for i in range(1,len(copia_transiciones)):
-                if copia_transiciones[0].actual == copia_transiciones[i].actual:
-                    quitar.append(i)
-            operaciones = []
-            for i in quitar:
-                operaciones.append({copia_transiciones[i].operacion:copia_transiciones[i].destino})
-            transicion = {copia_transiciones[0].actual:operaciones}
-            transiciones.append(transicion)
-            quitar.sort(reverse=True)
-            for i in quitar:
-                copia_transiciones.pop(i)
-        return transiciones
+    def crear_estado_inicial_reverso(estados: list[str],transiciones_reverso:list[Transicion],automata: AutomataOperaciones):
+        estado_inicial = "S0"
+        estados.append(estado_inicial)
+        for estado_final in automata.estados_finales:
+            transicion_nueva = Transicion(estado_inicial, estado_final, "λ")
+            transiciones_reverso.append(transicion_nueva)
+        return estado_inicial
