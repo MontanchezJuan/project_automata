@@ -47,7 +47,8 @@ class Operaciones:
             if estado != automata.estado_inicial:
                 eliminar =True
                 for transicion in automata.transiciones:
-                    if transicion.destino == estado:
+                    if transicion.destino == estado and transicion.actual != estado:
+                    ##! revisar si ya permite eliminar estados inalcanzables con bucles
                         eliminar = False
                 if eliminar == True:
                     estados_a_remover.append(estado)
