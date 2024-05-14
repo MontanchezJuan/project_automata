@@ -55,6 +55,7 @@ class Operaciones:
                     transiciones_a_remover = Operaciones.transiciones_a_eliminar(automata,estado)
                     Operaciones.eliminar_de_lista(automata.transiciones,transiciones_a_remover)
         Operaciones.eliminar_de_lista(automata.estados,estados_a_remover)
+        Operaciones.eliminar_de_lista(automata.estados_finales,estados_a_remover)
     
     @staticmethod
     def transiciones_a_eliminar(automata: AutomataOperaciones,estado:str) -> list[Transicion]:
@@ -67,7 +68,8 @@ class Operaciones:
     @staticmethod
     def eliminar_de_lista(lista:list, lista_a_eliminar:list):
         for item in lista_a_eliminar:
-            lista.remove(item)        
+            if item in lista:
+                lista.remove(item)    
 
     @staticmethod
     def reverso(automata: AutomataOperaciones):
