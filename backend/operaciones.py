@@ -49,6 +49,7 @@ class Operaciones:
                 for transicion in automata.transiciones:
                     if transicion.destino == estado and transicion.actual != estado:
                     ##! revisar si ya permite eliminar estados inalcanzables con bucles
+                    ##! revisar que se eliminen los estados correctamente
                         eliminar = False
                 if eliminar == True:
                     estados_a_remover.append(estado)
@@ -56,6 +57,9 @@ class Operaciones:
                     Operaciones.eliminar_de_lista(automata.transiciones,transiciones_a_remover)
         Operaciones.eliminar_de_lista(automata.estados,estados_a_remover)
         Operaciones.eliminar_de_lista(automata.estados_finales,estados_a_remover)
+        if len(estados_a_remover) >0:
+            
+            Operaciones.quitar_inalcanzables(automata)
     
     @staticmethod
     def transiciones_a_eliminar(automata: AutomataOperaciones,estado:str) -> list[Transicion]:
@@ -78,10 +82,11 @@ class Operaciones:
         estados : list[str] = automata.estados.copy()
         estados_finales: list[str] = [automata.estado_inicial]
         estado_inicial : str
+        # print("aaaa: ",automata.estados_finales)
         if len(automata.estados_finales) >1:
             estado_inicial = Operaciones.crear_estado_inicial_reverso(estados,transiciones_reverso,automata)
         else:
-            estado_inicial = automata.estados_finales[0]
+            estado_inicial = automata.estados_finales[0] if automata.estados_finales else None
         automata_reverso = AutomataOperaciones({"alfabeto": alfabeto, "estados": estados, "estado_inicial":estado_inicial, "estados_finales": estados_finales, "transiciones":AutomataOperaciones.transiciones_to_json(transiciones_reverso)})
         Operaciones.quitar_inalcanzables(automata_reverso)
         return automata_reverso.to_json()           
