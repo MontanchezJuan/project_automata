@@ -3,6 +3,7 @@ from automata_operaciones import AutomataOperaciones
 from operaciones import Operaciones as ops
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import traceback
 
 class Main:
     def __init__(self):
@@ -19,6 +20,7 @@ class Main:
                 data_response = automata.estructurar_api()
                 return jsonify({'message': 'Automata creado correctamente', 'automata': data_response})
             except Exception as e:
+                traceback.print_exc()
                 return jsonify({'error': str(e)}), 400
 
         @self.app.route('/operaciones', methods=['POST'])
@@ -26,12 +28,19 @@ class Main:
             try:
                 data = request.get_json()
                 automata1 = AutomataOperaciones(data.get("automata1"))
+                ops.quitar_inalcanzables(automata1)
+                print(automata1.to_json())
                 automata2 = AutomataOperaciones(data.get("automata2"))
+                ops.quitar_inalcanzables(automata2)
+                print(automata2.to_json())
                 interseccion_json = ops.interseccion(automata1,automata2)
                 interseccion_automata = AutomataOperaciones(interseccion_json)
+                print(interseccion_automata.to_json())
                 reverso = ops.reverso(interseccion_automata)
                 return jsonify({"interseccion" : interseccion_json , "reverso" : reverso}),200
             except Exception as e:
+                print("Se produjo un error:", e)
+                traceback.print_exc()
                 return jsonify({'error': str(e)}), 400
                 
     def run(self):
