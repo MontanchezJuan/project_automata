@@ -29,13 +29,10 @@ class Main:
                 data = request.get_json()
                 automata1 = AutomataOperaciones(data.get("automata1"))
                 ops.quitar_inalcanzables(automata1)
-                print(automata1.to_json())
                 automata2 = AutomataOperaciones(data.get("automata2"))
                 ops.quitar_inalcanzables(automata2)
-                print(automata2.to_json())
                 interseccion_json = ops.interseccion(automata1,automata2)
                 interseccion_automata = AutomataOperaciones(interseccion_json)
-                print(interseccion_automata.to_json())
                 reverso = ops.reverso(interseccion_automata)
                 return jsonify({"interseccion" : interseccion_json , "reverso" : reverso}),200
             except Exception as e:
