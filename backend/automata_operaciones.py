@@ -7,6 +7,7 @@ class AutomataOperaciones:
         self.transiciones: list[Transicion] = self.estructurar_transiciones(quintupla.get("transiciones"))
         self.estado_inicial: str = quintupla.get("estado_inicial")
         self.estados_finales: list[str] = quintupla.get("estados_finales")
+        self.sumidero: str = self.obtener_sumidero()
     
     def estructurar_transiciones(self, transiciones:dict) -> list[Transicion]:
         instancias_transicion = []
@@ -19,8 +20,19 @@ class AutomataOperaciones:
                 instancias_transicion.append(instancia_transicion)
         return instancias_transicion
 
+    def obtener_sumidero(self):
+        for estado in self.estados:
+            alfabeto_copy = self.alfabeto.copy()
+            for transicion in self.transiciones:
+                if transicion.actual == estado and transicion.destino == estado and estado not in self.estados_finales:
+                    alfabeto_copy.remove(transicion.operacion)
+            if len(alfabeto_copy) == 0:
+                return estado
+        return "_____"
+            
+    
     def to_json(self):
-        return {"alfabeto":self.alfabeto, "estados":self.estados, "estado_inicial":self.estado_inicial, "estados_finales":self.estados_finales, "transiciones":self.transiciones_to_json(self.transiciones)}
+        return {"alfabeto":self.alfabeto, "estados":self.estados, "estado_inicial":self.estado_inicial, "estados_finales":self.estados_finales, "transiciones":self.transiciones_to_json(self.transiciones), "sumidero":self.sumidero}
     
     @staticmethod
     def transiciones_to_json(transiciones:list[Transicion]):
