@@ -1,16 +1,34 @@
 import React, { createContext, useState, useContext, ReactNode } from "react";
-import { Automata } from "../interfaces/Automata";
+import { Automata, AutomataNoRegex } from "../interfaces/Automata";
 
 interface AutomataContextType {
   addAutomata: (newAutomata: Automata) => void;
+  addAutomatas: (
+    automataA: AutomataNoRegex,
+    automata1: AutomataNoRegex,
+    automataB: AutomataNoRegex,
+    automata2: AutomataNoRegex
+  ) => void;
   currentAutomata: Automata;
+  automataA: AutomataNoRegex;
+  automata1: AutomataNoRegex;
+  automataB: AutomataNoRegex;
+  automata2: AutomataNoRegex;
   deleteAutomata: (automata: Automata) => void;
+  // deleteAutomata1: (automata: Automata) => void;
+  // deleteAutomata2: (automata: Automata) => void;
   history: Automata[];
   setAutomata: (automata: Automata) => void;
+  // setAutomata1: (automata: Automata) => void;
+  // setAutomata2: (automata: Automata) => void;
 }
 
 interface InitialAutomataType {
   currentAutomata: Automata;
+  automataA: AutomataNoRegex;
+  automata1: AutomataNoRegex;
+  automataB: AutomataNoRegex;
+  automata2: AutomataNoRegex;
   history: Automata[];
 }
 
@@ -21,7 +39,35 @@ const InitialAutomata: InitialAutomataType = {
     alfabeto: [],
     transiciones: [],
     estado_inicial: "",
-    estado_final: "",
+    estados_finales: [],
+  },
+  automataA: {
+    estados: [],
+    alfabeto: [],
+    transiciones: [],
+    estado_inicial: "",
+    estados_finales: [],
+  },
+  automata1: {
+    estados: [],
+    alfabeto: [],
+    transiciones: [],
+    estado_inicial: "",
+    estados_finales: [],
+  },
+  automataB: {
+    estados: [],
+    alfabeto: [],
+    transiciones: [],
+    estado_inicial: "",
+    estados_finales: [],
+  },
+  automata2: {
+    estados: [],
+    alfabeto: [],
+    transiciones: [],
+    estado_inicial: "",
+    estados_finales: [],
   },
   history: [],
 };
@@ -30,7 +76,47 @@ const getInitialAutomata = (): InitialAutomataType => {
   if (!localStorage.getItem("automata")) return InitialAutomata;
 
   const savedAutomata = JSON.parse(localStorage.getItem("automata")!);
-  return (savedAutomata as InitialAutomataType) || InitialAutomata;
+  return (
+    {
+      history: savedAutomata,
+      currentAutomata: {
+        regex: "",
+        estados: [],
+        alfabeto: [],
+        transiciones: [],
+        estado_inicial: "",
+        estados_finales: [],
+      },
+      automataA: {
+        estados: [],
+        alfabeto: [],
+        transiciones: [],
+        estado_inicial: "",
+        estados_finales: [],
+      },
+      automata1: {
+        estados: [],
+        alfabeto: [],
+        transiciones: [],
+        estado_inicial: "",
+        estados_finales: [],
+      },
+      automataB: {
+        estados: [],
+        alfabeto: [],
+        transiciones: [],
+        estado_inicial: "",
+        estados_finales: [],
+      },
+      automata2: {
+        estados: [],
+        alfabeto: [],
+        transiciones: [],
+        estado_inicial: "",
+        estados_finales: [],
+      },
+    } || InitialAutomata
+  );
 };
 
 const AutomataContext = createContext<AutomataContextType | undefined>(
@@ -50,12 +136,35 @@ export const AutomataProvider: React.FC<{ children: ReactNode }> = ({
       automataGlobal.history && automataGlobal.history.length
         ? [...automataGlobal.history, newAutomata]
         : [newAutomata];
-    console.log(newHistory);
     localStorage.setItem("automata", JSON.stringify(newHistory));
 
     setAutomataGlobal({
+      ...automataGlobal,
       history: newHistory,
       currentAutomata: newAutomata,
+    });
+  };
+
+  const addAutomatas = (
+    automataA: AutomataNoRegex,
+    automata1: AutomataNoRegex,
+    automataB: AutomataNoRegex,
+    automata2: AutomataNoRegex
+  ) => {
+    if (!automata1 || !automataA || !automata2 || !automataB) return;
+
+    // const newHistory =
+    //   automataGlobal.history && automataGlobal.history.length
+    //     ? [...automataGlobal.history, newAutomata]
+    //     : [newAutomata];
+    // localStorage.setItem("automata", JSON.stringify(newHistory));
+
+    setAutomataGlobal({
+      ...automataGlobal,
+      automataA,
+      automata1,
+      automataB,
+      automata2,
     });
   };
 
@@ -74,6 +183,7 @@ export const AutomataProvider: React.FC<{ children: ReactNode }> = ({
           ? updatedHistory[0]
           : InitialAutomata.currentAutomata;
       setAutomataGlobal({
+        ...automataGlobal,
         history: updatedHistory,
         currentAutomata: newCurrentAutomata,
       });
@@ -89,6 +199,7 @@ export const AutomataProvider: React.FC<{ children: ReactNode }> = ({
     if (!automata) return;
 
     setAutomataGlobal({
+      ...automataGlobal,
       currentAutomata: automata,
       history: automataGlobal.history,
     });
@@ -96,7 +207,13 @@ export const AutomataProvider: React.FC<{ children: ReactNode }> = ({
 
   return (
     <AutomataContext.Provider
-      value={{ ...automataGlobal, addAutomata, deleteAutomata, setAutomata }}
+      value={{
+        ...automataGlobal,
+        addAutomata,
+        addAutomatas,
+        deleteAutomata,
+        setAutomata,
+      }}
     >
       {children}
     </AutomataContext.Provider>

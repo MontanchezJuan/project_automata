@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --open",
     "tw": "npx tailwindcss -i ./src/index.css -o ./src/App.css --watch",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -21,7 +21,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3",
-    "sweetalert2": "^11.10.7"
+    "sweetalert2": "^11.11.0"
   },
   "devDependencies": {
     "@types/d3-graphviz": "^2.6.10",

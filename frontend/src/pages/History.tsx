@@ -13,6 +13,8 @@ import {
 import { useAutomata } from "../context/AutomataContext";
 import { useNavigate } from "react-router-dom";
 
+import { PAGES } from ".";
+
 export const History = () => {
   const { history, deleteAutomata, setAutomata } = useAutomata();
 
@@ -33,7 +35,7 @@ export const History = () => {
                   colorScheme="whatsapp"
                   onClick={() => {
                     setAutomata(automata);
-                    navigate("/automata");
+                    navigate(PAGES.ShowAutomata.path);
                   }}
                 >
                   Ver Automata
@@ -53,7 +55,10 @@ export const History = () => {
               Aún no se han provado automatas
             </Badge>
 
-            <Button colorScheme="whatsapp" onClick={() => navigate("/")}>
+            <Button
+              colorScheme="whatsapp"
+              onClick={() => navigate(PAGES.Landing.path)}
+            >
               Volver a Inicio
             </Button>
           </div>

@@ -5,14 +5,11 @@ import { Button, Heading, Input } from "@chakra-ui/react";
 import Swal from "sweetalert2";
 
 import { useAutomata } from "../context/AutomataContext";
-import axios from "axios";
-import { Automata } from "../interfaces/Automata";
+
+import { PAGES } from ".";
+import { apiCrearAutomata } from "../api/Automatas.api";
 
 const OPERANDOS: string[] = ["(", ")", "|", "+", "*", "?"];
-
-interface Response {
-  data: { automata: Automata; message: string };
-}
 
 export const Landing = () => {
   const [regex, setRegex] = useState<string>("");
@@ -46,7 +43,6 @@ export const Landing = () => {
     }
   };
 
-  // Aquí
   const handleRegex = (value: string) => {
     if (position === null) return;
     const newValue =
@@ -104,11 +100,7 @@ export const Landing = () => {
 
     if (notValid) return;
 
-    axios
-      .post<{ regex: string }, Response>(
-        "http://127.0.0.1:5000/crear-automata",
-        { regex }
-      )
+    apiCrearAutomata(regex)
       .then((response) => {
         Swal.fire({
           title: `OK`,
@@ -117,7 +109,7 @@ export const Landing = () => {
         }).then((result) => {
           if (result.isConfirmed) {
             addAutomata(response.data.automata);
-            navigate("/automata");
+            navigate(PAGES.ShowAutomata.path);
           }
         });
       })
